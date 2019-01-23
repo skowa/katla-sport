@@ -5,7 +5,6 @@
       <th scope="col">#</th>
       <th scope="col">Code</th>
       <th scope="col">Name</th>
-      <th scope="col">Is deleted</th>
       <th scope="col"></th>
     </thead>
     <tbody>
@@ -13,12 +12,19 @@
         <th scope="row">{{hiveSection.id}}</th>
         <td>{{hiveSection.code}}</td>
         <td>{{hiveSection.name}}</td>
-        <td>{{hiveSection.isDeleted}}</td>
         <td>
-          <span class="btn-toolbar" aria-label="Hive section action buttons" style="display: block; white-space:nowrap;">
-              <div class="btn-group" role="group" aria-label="Edit group">
+          <span class="btn-toolbar" role="toolbar" aria-label="Hive section action buttons" style="display: block; white-space:nowrap;">
+            <div class="btn-group mr-2" role="group" *ngIf="!hiveSection.isDeleted; else restoreButton" aria-label="Delete group"  (click)="onDelete(hiveSection.id)">
+              <button type="button" class="btn btn-danger">Delete</button>
+            </div>
+            <ng-template #restoreButton>
+              <div class="btn-group mr-2" role="group" aria-label="Restore group" (click)="onRestore(hiveSection.id)">
+                <button type="button" class="btn btn-danger">Restore</button>
+              </div>
+            </ng-template>
+            <div class="btn-group" role="group" aria-label="Edit group">
                   <button routerLink="/section/{{hiveSection.id}}" type="button" class="btn btn-primary">Edit</button>
-                </div>
+            </div>
           </span>
         </td>
       </tr>

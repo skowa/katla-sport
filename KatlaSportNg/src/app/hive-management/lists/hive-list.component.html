@@ -14,9 +14,14 @@
         <td>{{hive.name}}</td>
         <td>
           <span class="btn-toolbar" role="toolbar" aria-label="Hive action buttons" style="display: block; white-space:nowrap;">
-            <div class="btn-group mr-2" role="group" aria-label="Delete group" *ngIf="!hive.isDeleted" (click)="onDelete(hive.id)">
+            <div class="btn-group mr-2" role="group" *ngIf="!hive.isDeleted; else restoreButton" aria-label="Delete group"  (click)="onDelete(hive.id)">
               <button type="button" class="btn btn-danger">Delete</button>
             </div>
+            <ng-template #restoreButton>
+              <div class="btn-group mr-2" role="group" aria-label="Restore group" (click)="onRestore(hive.id)">
+                <button type="button" class="btn btn-danger">Restore</button>
+              </div>
+            </ng-template>
             <div class="btn-group mr-2" role="group" aria-label="View group">
               <button routerLink="/hive/{{hive.id}}/sections" type="button" class="btn btn-primary">View sections</button>
             </div>
