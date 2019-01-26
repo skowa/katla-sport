@@ -46,6 +46,58 @@ namespace KatlaSport.WebApi.Controllers
             return Ok(hive);
         }
 
+        [HttpPost]
+        [Route("")]
+        [SwaggerResponse(HttpStatusCode.Created, Description = "Creates a new hive section")]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.InternalServerError)]
+        public async Task<IHttpActionResult> AddHiveSection([FromBody] UpdateHiveSectionRequest createRequest)
+        {
+            IHttpActionResult result = CheckRequest(createRequest);
+            if (result != null)
+            {
+                return result;
+            }
+
+            HiveSection hiveSection = await _hiveSectionService.CreateHiveSectionAsync(createRequest);
+            string location = $"/api/sections/{hiveSection.Id}";
+
+            return Created<HiveSection>(location, hiveSection);
+        }
+
+        [HttpPut]
+        [Route("{hiveSectionId:int:min(1)}")]
+        [SwaggerResponse(HttpStatusCode.NoContent, Description = "Updates an existed hive section.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.InternalServerError)]
+        public async Task<IHttpActionResult> UpdateHiveSection([FromUri] int hiveSectionId, [FromBody] UpdateHiveSectionRequest updateRequest)
+        {
+            IHttpActionResult result = CheckRequest(updateRequest);
+            if (result != null)
+            {
+                return result;
+            }
+
+            await _hiveSectionService.UpdateHiveSectionAsync(hiveSectionId, updateRequest);
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
+        }
+
+        [HttpDelete]
+        [Route("{hiveSectionId:int:min(1)}")]
+        [SwaggerResponse(HttpStatusCode.NoContent, Description = "Deletes an existed hive section.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest)]
+        [SwaggerResponse(HttpStatusCode.Conflict)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [SwaggerResponse(HttpStatusCode.InternalServerError)]
+        public async Task<IHttpActionResult> DeleteHiveSection([FromUri] int hiveSectionId)
+        {
+            await _hiveSectionService.DeleteHiveSectionAsync(hiveSectionId);
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
+        }
+
         [HttpPut]
         [Route("{hiveSectionId:int:min(1)}/status/{deletedStatus:bool}")]
         [SwaggerResponse(HttpStatusCode.NoContent, Description = "Sets deleted status for an existed hive section.")]
@@ -55,6 +107,21 @@ namespace KatlaSport.WebApi.Controllers
         {
             await _hiveSectionService.SetStatusAsync(hiveSectionId, deletedStatus);
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
+        }
+
+        private IHttpActionResult CheckRequest(UpdateHiveSectionRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest("The request does not contain body");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return null;
         }
     }
 }
