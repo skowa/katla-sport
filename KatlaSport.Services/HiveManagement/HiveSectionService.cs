@@ -57,6 +57,8 @@ namespace KatlaSport.Services.HiveManagement
                 throw new RequestedResourceHasConflictException($"The hive section with code {createRequest.Code} exists");
             }
 
+            await CheckStoreHiveId(createRequest);
+
             DbHiveSection dbHiveSection = Mapper.Map<UpdateHiveSectionRequest, DbHiveSection>(createRequest);
             dbHiveSection.CreatedBy = _userContext.UserId;
             dbHiveSection.LastUpdatedBy = _userContext.UserId;
@@ -76,6 +78,8 @@ namespace KatlaSport.Services.HiveManagement
             {
                 throw new RequestedResourceHasConflictException($"The hive section with code {updateRequest.Code} exists");
             }
+
+            await CheckStoreHiveId(updateRequest);
 
             DbHiveSection dbHiveSection = await GetDbHiveSectionById(hiveSectionId);
 
@@ -114,6 +118,16 @@ namespace KatlaSport.Services.HiveManagement
                 dbHiveSection.LastUpdatedBy = _userContext.UserId;
 
                 await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task CheckStoreHiveId(UpdateHiveSectionRequest request)
+        {
+            DbHiveSection[] dbHiveSections = await _context.Sections.Where(h => h.StoreHiveId == request.StoreHiveId).ToArrayAsync();
+
+            if (dbHiveSections.Length == 0)
+            {
+                throw new RequestedResourceHasConflictException($"The hive with id {request.StoreHiveId} does not exist");
             }
         }
 
