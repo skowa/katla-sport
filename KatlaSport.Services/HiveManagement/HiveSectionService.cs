@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using AutoMapper;
 using KatlaSport.DataAccess;
 using KatlaSport.DataAccess.ProductStoreHive;
 using DbHiveSection = KatlaSport.DataAccess.ProductStoreHive.StoreHiveSection;
+using DbHive = KatlaSport.DataAccess.ProductStoreHive.StoreHive;
 
 namespace KatlaSport.Services.HiveManagement
 {
@@ -123,9 +124,9 @@ namespace KatlaSport.Services.HiveManagement
 
         private async Task CheckStoreHiveId(UpdateHiveSectionRequest request)
         {
-            DbHiveSection[] dbHiveSections = await _context.Sections.Where(h => h.StoreHiveId == request.StoreHiveId).ToArrayAsync();
+            DbHive[] dbHives = await _context.Hives.Where(h => h.Id == request.StoreHiveId).ToArrayAsync();
 
-            if (dbHiveSections.Length == 0)
+            if (dbHives.Length == 0)
             {
                 throw new RequestedResourceHasConflictException($"The hive with id {request.StoreHiveId} does not exist");
             }
